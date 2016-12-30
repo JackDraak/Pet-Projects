@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{624CBA3D-4509-41D6-B809-D97636AA2372}</ProjectGuid>
+    <ProjectGuid>{17ADB45D-B138-4E29-A5CF-16E9A77AAA67}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>PetProjects</RootNamespace>
+    <RootNamespace>IsogramChallenge</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
