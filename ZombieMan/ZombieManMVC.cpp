@@ -79,22 +79,24 @@ std::mt19937 Entropy = std::mt19937{ std::random_device{}() };
 // Output a percentage of the ZombieMan.
 void PrintZombieMan(int percent)
 {
-    int const HEADER = 3;
-    int const MARGIN = 15;
-    int const ENDROW = 14;
-    float thisPercent = (percent / 100) * ENDROW; // TODO fix this
-Home(22, 0); std::cout << thisPercent << "-thisPercent.  ";
-    int beginRow = (ENDROW - thisPercent);
-std::cout << beginRow << "-beginRow ";
-    for (int thisRow = beginRow; thisRow <= ENDROW; thisRow++)
+    if (percent > 0)
     {
-        Home((thisRow + HEADER), MARGIN);
-        std::cout << zombieMan[thisRow];
-    }
-    return;
+        int const HEADER = 3;
+        int const MARGIN = 15;
+        int const ENDROW = 14;
+        float thisPercent = (percent / 100.0f);
+        float thisPortion = (thisPercent * ENDROW);
+        int thisFraction = thisPortion;
+        int beginRow = (ENDROW - thisFraction);
+        for (int thisRow = beginRow; thisRow <= ENDROW; thisRow++)
+        {
+            Home((thisRow + HEADER), MARGIN);
+            std::cout << zombieMan[thisRow];
+        }
+    } return;
 }
 
-// Get a <char> from the console user.
+// Get a <char> from the console user. 
 char GetChar()
 {
     std::string userInput;
@@ -125,7 +127,7 @@ int GetPercent()
         Home(21, 0); std::cout << "                                  ";
         if (thisStream >> newPercent) { break; }
         Home(21, 0); std::cout << "   Invalid entry...";
-        if (newPercent <= 100 && newPercent >= 0) outOfRange = false;
+        if (newPercent >= 0 && newPercent <= 100) outOfRange = false;
     } while (outOfRange);
     return newPercent;
 }
