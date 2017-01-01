@@ -96,39 +96,81 @@ void PrintZombieMan(int percent)
     } return;
 }
 
+// Output the current LetterBox
+void PrintLetterBox()
+{
+    // Print a template row...
+    Home(0, 14);
+    for (char thisLetter = 'a'; thisLetter <= 'z'; thisLetter++)
+    {
+        std::cout << thisLetter << " ";
+    }
+
+    // ...and beaneath it the queue.
+    Home(1, 14);
+    std::string theseLetters = activeLetterBox.GetLetters();
+    //std::cout << theseLetters;
+    int boxMember = 0;
+    for (char thisLetter = 'a'; thisLetter <= 'z'; thisLetter++)
+    {
+        char testLetter = theseLetters[boxMember];
+        if (testLetter == thisLetter)
+        {
+    //        Home(23, 0 + boxMember); std::cout << testLetter << " : " << thisLetter;
+            boxMember++;
+            std::cout << thisLetter << " ";
+        }
+        else if (testLetter != thisLetter) {
+            std::cout << "  ";
+        }
+    } return;
+}
+
 // Get a <char a-z> from the console user. 
 char GetLetter()
 {
     std::string userInput;
     char position;
     bool outOfRange = true;
+    Home(21, 0); std::cout << "                                  ";
     do
     {
         getline(std::cin, userInput);
-        std::stringstream thisStream(userInput);
         Home(21, 0); std::cout << "                                  ";
+        std::stringstream thisStream(userInput);
         if (thisStream >> position) { break; }
         Home(21, 0); std::cout << "   Invalid entry...";
         if (position >= 'a' && position <= 'z') outOfRange = false;
     } while (outOfRange);
+    Home(21, 0); std::cout << "                                  ";
     return position;
+}
+
+// Get a string from the console user. 
+std::string GetString()
+{
+    std::string userInput;
+    getline(std::cin, userInput);
+    return userInput;
 }
 
 // Get a percentage (0-100) from the console user.
 int GetPercent()
 {
     std::string userInput;
-    int newPercent;
+    int newPercent = -1;
     bool outOfRange = true;
+    Home(21, 0); std::cout << "                   ";
     do
     {
+        Home(20, 44);
         getline(std::cin, userInput);
+        Home(21, 0); std::cout << "                                  ";
         std::stringstream thisStream(userInput);
-        Home(21, 0); std::cout << "                   ";
-        if (thisStream >> newPercent) { break; }
-        Home(21, 0); std::cout << "   Invalid entry...";
+        if (!(thisStream >> newPercent)) { Home(21, 0); std::cout << "   Invalid entry..."; }
         if (newPercent >= 0 && newPercent <= 100) outOfRange = false;
     } while (outOfRange);
+    Home(21, 0); std::cout << "                                  ";
     return newPercent;
 }
 
@@ -214,9 +256,9 @@ std::string LetterBox::GetLetters() const { return BoxOfLetters; }
 void LetterBox::Reset() { BoxOfLetters = ""; return; }
 
 // Ensure that the character argument is in the letterbox. 
-void LetterBox::SubmitLetter(char cLetter)
+void LetterBox::SubmitLetter(char letter)
 {
-    if (BoxOfLetters == "") { BoxOfLetters += cLetter; }
+    if (BoxOfLetters == "") { BoxOfLetters += letter; }
     else
     {
         bool bNovelChar = false;
@@ -225,13 +267,13 @@ void LetterBox::SubmitLetter(char cLetter)
 
         for (int iSlot = 0; iSlot < iBoxSize; iSlot++)
         {
-            if (!(BoxOfLetters[iSlot] == cLetter))
+            if (!(BoxOfLetters[iSlot] == letter))
             {
                 iLetterMatches++; bNovelChar = true;
             }
         }
         if (bNovelChar && (iLetterMatches == iBoxSize)) {
-            BoxOfLetters += cLetter;
+            BoxOfLetters += letter;
         }
     }
     std::sort(BoxOfLetters.begin(), BoxOfLetters.end());
@@ -244,11 +286,13 @@ int main()
     do
     {
         Home();
+        PrintLetterBox();
+        PrintZombieMan(Shuffle(0, 100));
         Home(20, 42); std::cout << "              ";
-        Home(20, 0); std::cout << "] Enter percentage of ZombieMan to reveal: ";
-        int printPercent = GetPercent();  
-        PrintZombieMan(printPercent);
-    } while (Continue());
+        Home(20, 0); std::cout << "] Please enter the letter you would like to risk: ";
+        std::string thisPlay = GetString();  
+        activeLetterBox.SubmitLetter(thisPlay[0]);
+    } while (true); /// Continue());
 
     return 0;
 }
