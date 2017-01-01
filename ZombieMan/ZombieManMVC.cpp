@@ -361,7 +361,7 @@ int main()
                 Home(20, 0); std::cout << "] Here comes ZombieMan, intent on eating your BrAiNs!\n  (hit <Enter> to continue)";
                 std::string thisPlay = GetString();
             }
-            else {
+            else if (!success) {
                 Home(20, 42); std::cout << "              ";
                 Home(20, 0); std::cout << "] Please enter the letter you would like to risk: ";
                 std::string thisPlay = GetString();
@@ -378,7 +378,7 @@ int main()
             Home(20, 0); std::cout << "] You escaped with the secret word before ZombieMan attacked. Congratulations!\n  (hit <Enter> to continue)";
             std::string thisPlay = GetString();
         }
-    } while (Continue());
+    } while (true); //  Continue());
 
     return 0;
 }
