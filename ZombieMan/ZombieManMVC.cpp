@@ -107,7 +107,7 @@ void PrintZombieMan(int percent)
     } return;
 }
 
-// Output the secret word clue.
+// Output the secret word clue. True when player has guessed all the correct letters.
 bool PrintAndEvaluateSecret()
 {
     bool gameOver = false;
@@ -299,7 +299,7 @@ std::string LetterBox::GetLetters() const { return BoxOfLetters; }
 // Reset (i.e.: empty) the letterbox contents.
 void LetterBox::Reset() { BoxOfLetters = ""; return; }
 
-// Ensure that the character argument is in the letterbox. (True when submitted letter is also in the secret word).
+// Ensure that the character argument is in the letterbox. ('True' when submitted letter is also in the secret word).
 bool LetterBox::SubmitLetter(char letter)
 {
     int boxSize = BoxOfLetters.length();
@@ -324,46 +324,60 @@ bool LetterBox::SubmitLetter(char letter)
 
     // TODO too tired, this is getting screwy
     // check if Zombie gets a meal...
-    boxSize = BoxOfLetters.length();
+   // boxSize = BoxOfLetters.length();///
     int wordSize = secretWord.size();
     bool inWord = false;
-    for (int letter = 0; letter < boxSize; letter++)
-    {
-        for (int secretLetter = 0; secretLetter < wordSize; secretLetter++)
+   for (int letterPos = 0; letterPos < wordSize; letterPos++)
+  //  {
+    //    for (int secretLetter = 0; secretLetter < wordSize; secretLetter++)
         {
-            if (BoxOfLetters[letter] == secretWord[secretLetter])
+            if (letter == secretWord[letterPos])
             {
                 inWord = true;
             }
-        }
+       // }
     } return inWord;
 }
 
 // Application entry point.
 int main()
 {
-    bool zombieSafe;
-    int zombieLevel = 0;
     do
     {
-        zombieSafe = true;
+        int zombieLevel = 0;
+        bool zombieSafe = true;
         bool success;
+        activeLetterBox.Reset();
         do
         {
             Home();
             PrintLetterBox();
-            PrintZombieMan(zombieLevel); // Shuffle(0, 100)); // TODO placeholder for something more meaningful
+            PrintZombieMan(zombieLevel); // Shuffle(0, 100)); // TODO placeholder for something more meaningful ||  PrintZombieMan(zombieLevel);
             success = PrintAndEvaluateSecret();
-            Home(20, 42); std::cout << "              ";
-            Home(20, 0); std::cout << "] Please enter the letter you would like to risk: ";
-            std::string thisPlay = GetString();
-            bool zombieSafe = (activeLetterBox.SubmitLetter(thisPlay[0]));
-            if (!zombieSafe)
+            if (zombieLevel >= 100)
             {
-                zombieLevel += 20;
+                success = true;
+                Home(20, 42); std::cout << "              ";
+                Home(20, 0); std::cout << "] Here comes ZombieMan, intent on eating your BrAiNs!\n  (hit <Enter> to continue)";
+                std::string thisPlay = GetString();
             }
-            if (zombieLevel == 100) success = false;
+            else {
+                Home(20, 42); std::cout << "              ";
+                Home(20, 0); std::cout << "] Please enter the letter you would like to risk: ";
+                std::string thisPlay = GetString();
+                bool zombieSafe = (activeLetterBox.SubmitLetter(thisPlay[0]));
+                if (!zombieSafe)
+                {
+                    zombieLevel += 20;
+                }
+            }
         } while (!success);
+        if (PrintAndEvaluateSecret())
+        {
+            Home(20, 42); std::cout << "              ";
+            Home(20, 0); std::cout << "] You escaped with the secret word before ZombieMan attacked. Congratulations!\n  (hit <Enter> to continue)";
+            std::string thisPlay = GetString();
+        }
     } while (Continue());
 
     return 0;
