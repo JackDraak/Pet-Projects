@@ -122,8 +122,8 @@ bool PrintAndEvaluateSecret()
               << "     your scraps to put himself back\n"
               << "     together again, allowing him to\n"
               << "     eat your BrAiNs!";
-    Home(5, 5);
-    std::cout << "     Secret Word: ";
+    Home(5, 0);
+    std::cout << "     Secret Word:  ";
     for (int letterPos = 0; letterPos < wordSize; letterPos++)
     {
         secret = true;
@@ -136,7 +136,7 @@ bool PrintAndEvaluateSecret()
                 if (letterScore == wordSize) gameOver = true;
             }
         }
-        if (secret) std::cout << "_"; else std::cout << secretWord[letterPos];
+        if (secret) std::cout << "_ "; else std::cout << secretWord[letterPos] << " ";
     } 
     return gameOver;
 }
@@ -146,11 +146,7 @@ void PrintLetterBox()
 {
     // TODO decide if the template row stays or goes...
     // Print a template row... 
-/*    Home(0, 14);
-    for (char thisLetter = 'a'; thisLetter <= 'z'; thisLetter++)
-    {
-        std::cout << thisLetter << " ";
-    } */
+    ///    Home(0, 14); for (char thisLetter = 'a'; thisLetter <= 'z'; thisLetter++) { std::cout << thisLetter << " "; } 
 
     // ...and beaneath it the queue.
     Home(1, 14);
@@ -322,20 +318,15 @@ bool LetterBox::SubmitLetter(char letter)
     }
     std::sort(BoxOfLetters.begin(), BoxOfLetters.end());
 
-    // TODO too tired, this is getting screwy
     // check if Zombie gets a meal...
-   // boxSize = BoxOfLetters.length();///
     int wordSize = secretWord.size();
     bool inWord = false;
    for (int letterPos = 0; letterPos < wordSize; letterPos++)
-  //  {
-    //    for (int secretLetter = 0; secretLetter < wordSize; secretLetter++)
         {
             if (letter == secretWord[letterPos])
             {
                 inWord = true;
             }
-       // }
     } return inWord;
 }
 
