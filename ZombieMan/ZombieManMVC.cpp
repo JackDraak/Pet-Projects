@@ -1,20 +1,4 @@
 /*
-                ....
-               C C  ?
-              /<   %
- ___ __________\&__/
-/(- /(\_\_______   \
-\ ) \ )_     \o     \
-/|\ /|\      |'     |
-            /o   __\
-           / '  /  |
-          /_/\_____|
-         (   _(    <
-          \    \    \
-           \    \    |
-            \____\____\
-            %___\_%__\_\
-
     While contemplating things I might code in order
     to practice and learn about C++, I remembered a
     childhood two-person game called Hangman. 
@@ -37,8 +21,10 @@
 #include <iostream>
 #include <sstream>
 
-// Used to be random!
+// Used in order to be random!
 #include <random> 
+
+#include <algorithm>
 
 // Used to treat the console display as a textbox.
 #include <windows.h>
@@ -46,26 +32,41 @@
 #include <string.h>
 #include <stdlib.h>
 
+// CLASS LetterBox -- Container to store characters submitted during a phase of play.
+class LetterBox {
+public:
+    std::string GetLetters() const;
+
+    void Reset();
+    void SubmitLetter(char);
+
+private:
+    std::string BoxOfLetters;
+};
+
+// Instantiate a LetterBox object for the game.
+LetterBox activeLetterBox;
+
 std::string zombieMan[15] = {
-     "                ....     ",
-     "               C C  ?     ",
-     "              /<   %     ",
-     " ___ __________\\&__/     ",
-     "/(- /(\\_\\_______   \\     ",
-     "\\ ) \\ )_     \\o     \\     ",
-     "/|\\ /|\\      |'     |          ",
-     "            /o   __\\     ",
-     "           / '  /  |     ",
-     "          /_/\\_____|     ",
-     "         (   _(    <     ",
-     "          \\    \\    \\     ",
-     "           \\    \\    |     ",
-     "            \\____\\____\\     ",
-     "            %___\\_%__\\_\\     ",
+     "               ....     ",
+     "              C C  ?     ",
+     "             /<   %     ",
+     " ___ ________\\&__/     ",
+     "/(- /(\\_\\_____   \\     ",
+     "\\ ) \\ )_   \\o     \\     ",
+     "/|\\ /|\\    |'     |          ",
+     "           /o   __\\     ",
+     "          / '  /  |     ",
+     "         /_/\\_____|     ",
+     "        (   _(    <     ",
+     "         \\    \\    \\     ",
+     "          \\    \\    |     ",
+     "           \\____\\____\\     ",
+     "           %___\\_%__\\     ",
 };
 
 bool Continue();
-char GetChar();
+char GetLetter();
 int GetPercent();
 int Shuffle(int, int);
 void PauseForInput();
@@ -82,11 +83,10 @@ void PrintZombieMan(int percent)
     if (percent > 0)
     {
         int const HEADER = 3;
-        int const MARGIN = 15;
+        int const MARGIN = 50;
         int const ENDROW = 14;
-        float thisPercent = (percent / 100.0f);
-        float thisPortion = (thisPercent * ENDROW);
-        int thisFraction = thisPortion;
+        float thisPercent = ((percent / 100.0f) * ENDROW);
+        int thisFraction = floor(thisPercent + 0.5); /// simulate rounding-off to get back to an integer; ignore data-loss warning.
         int beginRow = (ENDROW - thisFraction);
         for (int thisRow = beginRow; thisRow <= ENDROW; thisRow++)
         {
@@ -96,8 +96,8 @@ void PrintZombieMan(int percent)
     } return;
 }
 
-// Get a <char> from the console user. 
-char GetChar()
+// Get a <char a-z> from the console user. 
+char GetLetter()
 {
     std::string userInput;
     char position;
@@ -109,7 +109,7 @@ char GetChar()
         Home(21, 0); std::cout << "                                  ";
         if (thisStream >> position) { break; }
         Home(21, 0); std::cout << "   Invalid entry...";
-        if (position >= '1' && position <= '9') outOfRange = false; // TODO complete this
+        if (position >= 'a' && position <= 'z') outOfRange = false;
     } while (outOfRange);
     return position;
 }
@@ -124,7 +124,7 @@ int GetPercent()
     {
         getline(std::cin, userInput);
         std::stringstream thisStream(userInput);
-        Home(21, 0); std::cout << "                                  ";
+        Home(21, 0); std::cout << "                   ";
         if (thisStream >> newPercent) { break; }
         Home(21, 0); std::cout << "   Invalid entry...";
         if (newPercent >= 0 && newPercent <= 100) outOfRange = false;
@@ -176,7 +176,7 @@ void Home(int row, int column)
 void PauseForInput()
 {
     std::string userInput;
-    Home(20, 0);  std::cout << "   Please hit <Enter> to proceed...                         ";
+    Home(20, 0);  std::cout << "] Please hit <Enter> to proceed...                       ";
     getline(std::cin, userInput);
     return;
 }
@@ -189,7 +189,7 @@ bool Continue()
     do
     {
         std::string userInput;
-        Home(20, 0); std::cout << "   Please enter (P)lay or (Q)uit then <Enter>, thank you. ";
+        Home(20, 0); std::cout << "] Please enter (P)lay or (Q)uit then <Enter>, thank you. ";
         getline(std::cin, userInput);
         if (userInput[0] == 'p' || userInput[0] == 'P')
         {
@@ -200,18 +200,53 @@ bool Continue()
         {
             validInput = true;
         }
-    } while (!validInput);
-    Home(10, 0); std::cout << "                                                               ";
+    } while (!validInput); 
+    Home(10, 0); std::cout << "                                                         ";
     return proceed;
 }
 
+// ----- Letter-Box Methods ----- //
+
+// Return a string of any letters stored in the letterbox.
+std::string LetterBox::GetLetters() const { return BoxOfLetters; }
+
+// Reset (i.e.: empty) the letterbox contents.
+void LetterBox::Reset() { BoxOfLetters = ""; return; }
+
+// Ensure that the character argument is in the letterbox. 
+void LetterBox::SubmitLetter(char cLetter)
+{
+    if (BoxOfLetters == "") { BoxOfLetters += cLetter; }
+    else
+    {
+        bool bNovelChar = false;
+        int iBoxSize = BoxOfLetters.length();
+        int iLetterMatches = 0;
+
+        for (int iSlot = 0; iSlot < iBoxSize; iSlot++)
+        {
+            if (!(BoxOfLetters[iSlot] == cLetter))
+            {
+                iLetterMatches++; bNovelChar = true;
+            }
+        }
+        if (bNovelChar && (iLetterMatches == iBoxSize)) {
+            BoxOfLetters += cLetter;
+        }
+    }
+    std::sort(BoxOfLetters.begin(), BoxOfLetters.end());
+    return;
+}
+
+// Application entry point.
 int main()
 {
     do
     {
         Home();
-        Home(20, 0); std::cout << "   Enter percentage of ZombieMan to appear: ";
-        int printPercent = GetPercent();
+        Home(20, 42); std::cout << "              ";
+        Home(20, 0); std::cout << "] Enter percentage of ZombieMan to reveal: ";
+        int printPercent = GetPercent();  
         PrintZombieMan(printPercent);
     } while (Continue());
 
