@@ -17,6 +17,11 @@
 
     @JackDraak (2016)
 */
+// Includes to treat the console display as a textbox.
+#include <windows.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 // Includes for I/O.
 #include <iostream>
@@ -31,11 +36,8 @@
 // Include in _order_ to be random!
 #include <random> 
 
-// Includes to treat the console display as a textbox.
-#include <windows.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+// For quality randomness, use this Entropy.
+std::mt19937 Entropy = std::mt19937{ std::random_device{}() };
 
 // CLASS LetterBox -- Container to store characters submitted during a phase of play.
 class LetterBox {
@@ -74,7 +76,7 @@ std::string zombieMan[15] = {
 
 std::string secretWord = "example"; // TODO get a dictionary up and going
 
-// Function prototypes.
+// Function declarations.
 
 bool Continue();
 char GetLetter();
@@ -88,9 +90,6 @@ bool PrintAndEvaluateSecret();
 void PrintZombieMan(int);
 void Home();
 void Home(int, int);
-
-// For quality randomness, use this Entropy.
-std::mt19937 Entropy = std::mt19937{ std::random_device{}() };
 
 // Output a percentage of the ZombieMan.
 void PrintZombieMan(int percent)
@@ -149,7 +148,7 @@ bool PrintAndEvaluateSecret()
 void PrintLetterBox()
 {
     // TODO decide if the template row stays or goes...
-    // Print a template row... 
+    /// Print a template row... 
     ///    Home(0, 14); for (char thisLetter = 'a'; thisLetter <= 'z'; thisLetter++) { std::cout << thisLetter << " "; } 
 
     // ...and beaneath it the queue.
@@ -174,20 +173,24 @@ void PrintLetterBox()
 char GetLetter()
 {
     std::string userInput;
-    char position;
+    std::string tempString;
+    char thisChar;
     bool outOfRange = true;
-    Home(21, 0); std::cout << "                                  ";
+    Home(20, 0); std::cout << "                                 ";
     do
     {
+        Home(19, 50);
         getline(std::cin, userInput);
-        Home(21, 0); std::cout << "                                  ";
         std::stringstream thisStream(userInput);
-        if (thisStream >> position) { break; }
-        Home(21, 0); std::cout << "   Invalid entry...";
-        if (position >= 'a' && position <= 'z') outOfRange = false;
+        thisStream >> tempString;
+        thisChar = tempString[0];
+        if (thisChar >= 'a' && thisChar <= 'z') outOfRange = false;
+        else
+        {
+            Home(20, 0); std::cout << "Invalid entry, please re-try.";
+        }
     } while (outOfRange);
-    Home(21, 0); std::cout << "                                  ";
-    return position;
+    return thisChar;
 }
 
 // Get a string from the console user. 
@@ -314,7 +317,7 @@ std::string SetZombieWord(int minSize, int maxSize)
     if (minSize < 2) { minSize = 2; }
     if (minSize > 10) { minSize = 10; }
 
-    // Dictionary of isogram challenge words
+    // Dictionary of (mostly) isogram challenge words
     std::vector<std::string> dictionary = {
         // random words, may not be isograms
         "that", "ranger", "endanger", "entangle", "arrest", "arresting", "arrested", "envelope", "raspberry", "cherry", 
@@ -502,15 +505,15 @@ int main()
             else if (!success) {
                 Home(19, 42); std::cout << "              ";
                 Home(19, 0); std::cout << "] Please enter the letter you would like to risk: ";
-                std::string thisPlay = GetString();
-                bool zombieSafe = (activeLetterBox.SubmitLetter(thisPlay[0]));
+                char thisPlay = GetLetter();
+                bool zombieSafe = (activeLetterBox.SubmitLetter(thisPlay));
                 if (!zombieSafe)
                 {
                     zombieLevel += zombieBooster;
                 }
             }
         } while (!success);
-        if (PrintAndEvaluateSecret())
+        if (PrintAndEvaluateSecret()) // TODO should this have more evaluators? seems to be leading to the printing of the serect word on losses...
         {
             Home(19, 42); std::cout << "              ";
             Home(19, 0); std::cout << "] You escaped with the secret word before ZombieMan attacked. Congratulations!\n  (hit <Enter> to continue)";
