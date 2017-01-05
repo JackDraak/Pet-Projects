@@ -57,28 +57,29 @@ LetterBox activeLetterBox;
 // Global variables.
 
 std::string zombieMan[15] = {
-     "               ....     ",
+     "               ....     ",            // 0
      "              C C  ?     ",
      "             /<   %     ",
      " ___ ________\\&__/     ",
-     "/(- /(\\_\\_____   \\     ",
+     "/(- /(\\_\\_____   \\     ",          // 4
      "\\ ) \\ )_   \\o     \\     ",
      "/|\\ /|\\    |'     |          ",
      "           /o   __\\     ",
      "          / '  /  |     ",
-     "         /_/\\_____|     ",
+     "         /_/\\_____|     ",           // 9
      "        (   _(    <     ",
      "         \\    \\    \\     ",
      "          \\    \\    |     ",
      "           \\____\\____\\     ",
-     "           %___\\_%__\\     ",
+     "           %___\\_%__\\     ",        // 14
 };
 
-std::string secretWord = "example"; // TODO get a dictionary up and going
+std::string secretWord = "example"; // TODO add more words to the dictionary.
 
 // Function declarations.
 
 bool Continue();
+bool PrintAndEvaluateSecret();
 char GetLetter();
 int GetPercent();
 int Shuffle(int, int);
@@ -86,7 +87,6 @@ std::string GetString();
 std::string SetZombieWord(int, int);
 void PauseForInput();
 void PrintLetterBox();
-bool PrintAndEvaluateSecret();
 void PrintZombieMan(int);
 void Home();
 void Home(int, int);
@@ -174,7 +174,7 @@ char GetLetter()
 {
     std::string userInput;
     std::string tempString;
-    char thisChar;
+    char thisChar;// = 'A';
     bool outOfRange = true;
     Home(20, 0); std::cout << "                                 ";
     do
@@ -184,9 +184,11 @@ char GetLetter()
         std::stringstream thisStream(userInput);
         thisStream >> tempString;
         thisChar = tempString[0];
+        char myChar = 'A';
+        myChar -= ('A' - 'a');
+        Home(2, 2); std::cout << myChar;
         if (thisChar >= 'a' && thisChar <= 'z') outOfRange = false;
-        else
-        {
+        else {
             Home(20, 0); std::cout << "Invalid entry, please re-try.";
         }
     } while (outOfRange);
@@ -481,19 +483,19 @@ int main()
 {
     do
     {
-        int zombieLevel = 0;
         bool zombieSafe = true;
         bool success;
-        secretWord = SetZombieWord(3, 11);
         int guessLimit = GetMaxGuesses(secretWord.size());
+        int zombieLevel = 0;
         int zombieBooster = (99.0f / guessLimit);
-
+        secretWord = SetZombieWord(3, 11);
         activeLetterBox.Reset();
+
         do
         {
             Home();
             PrintLetterBox();
-            PrintZombieMan(zombieLevel); /// Shuffle(0, 100));
+            PrintZombieMan(zombieLevel); // somehow this is leading to the secret word being revealed in a loss.... !??!?!
             success = PrintAndEvaluateSecret();
             if (zombieLevel >= 100)
             {
@@ -513,13 +515,13 @@ int main()
                 }
             }
         } while (!success);
-        if (PrintAndEvaluateSecret()) // TODO should this have more evaluators? seems to be leading to the printing of the serect word on losses...
+        if (PrintAndEvaluateSecret()) // TODO should this have more evaluators? why is the serect word printing on losses...
         {
             Home(19, 42); std::cout << "              ";
             Home(19, 0); std::cout << "] You escaped with the secret word before ZombieMan attacked. Congratulations!\n  (hit <Enter> to continue)";
             std::string thisPlay = GetString();
         }
-    } while (true); ///  Continue());
+    } while (true);
 
     return 0;
 }
