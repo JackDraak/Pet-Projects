@@ -91,6 +91,14 @@ void PrintZombieMan(int);
 void Home();
 void Home(int, int);
 
+void LocPrint(int, int, std::string);
+
+void LocPrint(int pRow, int pColumn, std::string pString)
+{
+    Home(pRow, pColumn);
+    std::cout << pString;
+}
+
 // Output a percentage of the ZombieMan.
 void PrintZombieMan(int percent)
 {
@@ -104,8 +112,9 @@ void PrintZombieMan(int percent)
         int beginRow = (ENDROW - thisFraction);
         for (int thisRow = beginRow; thisRow <= ENDROW; thisRow++)
         {
-            Home((thisRow + HEADER), MARGIN);
-            std::cout << zombieMan[thisRow];
+            LocPrint((thisRow + HEADER), MARGIN, zombieMan[thisRow]);
+           // Home((thisRow + HEADER), MARGIN);
+           // std::cout << zombieMan[thisRow];
         }
     } return;
 }
