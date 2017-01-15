@@ -81,6 +81,7 @@ std::string secretWord = "example"; // TODO add more words to the dictionary.
 bool Continue();
 bool PrintAndEvaluateSecret();
 char GetLetter();
+int GetMaxGuesses(int);
 int GetPercent();
 int Shuffle(int, int);
 std::string GetString();
@@ -306,7 +307,7 @@ bool Continue()
 }
 
 // Respond with # of guesses allowed based on length of challenge word (& difficulty setting?).
-int GetMaxGuesses(int wordSize) 
+int old_GetMaxGuesses(int wordSize) 
 {
     int maxGuesses;
 
@@ -319,6 +320,37 @@ int GetMaxGuesses(int wordSize)
         maxGuesses = mWordSizeToGuessCount[wordSize];
     } return maxGuesses;
 }
+
+int GetMaxGuesses(int wordSize)
+{
+    switch (wordSize)
+    {
+    case 2:
+    case 3:
+        return 11;
+    case 4:
+    case 5:
+        return 9;
+    case 6:
+    case 7:
+        return 7;
+    case 8:
+    case 9:
+    case 10:
+        return 5;
+    case 11:
+    case 12:
+    case 13:
+    case 14:    
+    case 15:
+    case 16:
+    case 17:
+        return 3;
+    default:
+        return 6;
+    }
+}
+
 
 // Respond with next challenge-word;
 std::string SetZombieWord(int minSize, int maxSize)
