@@ -37,37 +37,37 @@ std::mt19937 Entropy = std::mt19937{ std::random_device{}() };
 class box
 {
 private:
-    char value;
-    char identity;
-    int screenColumn;
-    int screenRow;
+    char    value;
+    char    identity;
+    int     screenColumn;
+    int     screenRow;
 
 public:
     box();
-    char GetValue();
-    char GetID();
-    int GetScreenColumn();
-    int GetScreenRow();
-    void Reset();
-    void SetValue(char);
-    void SetID(char);
-    void SetScreenColumn(int);
-    void SetScreenRow(int);
+    char    GetValue();
+    char    GetID();
+    int     GetScreenColumn();
+    int     GetScreenRow();
+    void    Reset();
+    void    SetValue(char);
+    void    SetID(char);
+    void    SetScreenColumn(int);
+    void    SetScreenRow(int);
 };
 
 // Default initializations for a new box object.
 box::box() { value = 'U'; identity = '0'; screenColumn = 0; screenRow = 0; return; }
 
 // Box getters and setters.
-char box::GetValue() { return value; }
-char box::GetID() { return identity; }
-int box::GetScreenColumn() { return screenColumn; }
-int box::GetScreenRow() { return screenRow; }
-void box::Reset() { value = identity; return; }
-void box::SetValue(char newValue) { value = newValue; return; }
-void box::SetID(char newID) { identity = newID; return; }
-void box::SetScreenColumn(int sColumn) { screenColumn = sColumn;  return; }
-void box::SetScreenRow(int sRow) { screenRow = sRow;  return; }
+char    box::GetValue()                     { return value; }
+char    box::GetID()                        { return identity; }
+int     box::GetScreenColumn()              { return screenColumn; }
+int     box::GetScreenRow()                 { return screenRow; }
+void    box::Reset()                        { value = identity; return; }
+void    box::SetValue(char newValue)        { value = newValue; return; }
+void    box::SetID(char newID)              { identity = newID; return; }
+void    box::SetScreenColumn(int sColumn)   { screenColumn = sColumn;  return; }
+void    box::SetScreenRow(int sRow)         { screenRow = sRow;  return; }
 
 // Global variables.
 char const winSets[8][3] = {
@@ -83,33 +83,33 @@ char const winSets[8][3] = {
 
 box gameBoard[3][3];
 
-char activePlayer;
-char blockingPlay;
-char winingSet;
-char winner;
-bool playerXturn = false;
-int blockingSet;
+char    activePlayer;
+char    blockingPlay;
+char    winingSet;
+char    winner;
+bool    playerXturn = false;
+int     blockingSet;
 
 // Method prototypes.
 
-bool CheckForBlock();
-bool CheckForWin();
-bool Continue();
-bool ValidatePlay(char);
-char GetBlockingPlay(int);
-char GetPlay();
-char GetBoxValue(char);
-char Shuffle(char, char);
-int Shuffle(int);
-int Shuffle(int, int);
-void Home();
-void Home(bool);
-void Home(int, int);
-void InitBoard();
-void PauseForInput();
-void PrintEmptyBoard();
-void PrintValues();
-void SwitchPlayer();
+bool    CheckForBlock();
+bool    CheckForWin();
+bool    Continue();
+bool    ValidatePlay(char);
+char    GetBlockingPlay(int);
+char    GetPlay();
+char    GetBoxValue(char);
+char    Shuffle(char, char);
+int     Shuffle(int);
+int     Shuffle(int, int);
+void    Home();
+void    Home(bool);
+void    Home(int, int);
+void    InitBoard();
+void    PauseForInput();
+void    PrintEmptyBoard();
+void    PrintValues();
+void    SwitchPlayer();
 
 // Switch active player from X to O or vice versa.
 void SwitchPlayer()
@@ -129,6 +129,7 @@ void PrintValues()
             int boxRow = gameBoard[row][column].GetScreenRow();
             int boxColumn = gameBoard[row][column].GetScreenColumn();
             char boxValue = gameBoard[row][column].GetValue();
+
             // Output value to designated screen position.
             Home(boxRow, boxColumn);
             std::cout << boxValue;
