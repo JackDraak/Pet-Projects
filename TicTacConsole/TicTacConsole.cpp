@@ -18,98 +18,158 @@
 */
 
 // Used for Input and Output.
-#include <iostream>
-#include <sstream>
+    #include <iostream>
+    #include <sstream>
 
 // Used by A.I. player.
-#include <random> 
+    #include <random> 
 
 // Used to treat the console display as a textbox.
-#include <windows.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <windows.h>
 
 // For quality randomness, use this Entropy.
-std::mt19937 Entropy = std::mt19937{ std::random_device{}() };
+    std::mt19937 Entropy = std::mt19937{ std::random_device{}() };
 
 // The 9 cells of the traditional game grid will be box objects in memory.
-class box
-{
-private:
-    char    value;
-    char    identity;
-    int     screenColumn;
-    int     screenRow;
+    class box
+    {
+    private:
+        char    identity;
+        char    value;
+        int     screenColumn;
+        int     screenRow;
 
-public:
-    box();
-    char    GetValue();
-    char    GetID();
-    int     GetScreenColumn();
-    int     GetScreenRow();
-    void    Reset();
-    void    SetValue(char);
-    void    SetID(char);
-    void    SetScreenColumn(int);
-    void    SetScreenRow(int);
-};
+    public:
+        box();
+        char    GetID();
+        char    GetValue();
+        int     GetScreenColumn();
+        int     GetScreenRow();
+        void    Reset();
+        void    SetID(char);
+        void    SetScreenColumn(int);
+        void    SetScreenRow(int);
+        void    SetValue(char);
+    };
 
 // Default initializations for a new box object.
-box::box() { value = 'U'; identity = '0'; screenColumn = 0; screenRow = 0; return; }
+    box::box() { value = 'U'; identity = '0'; screenColumn = 0; screenRow = 0; return; }
 
 // Box getters and setters.
-char    box::GetValue()                     { return value; }
-char    box::GetID()                        { return identity; }
-int     box::GetScreenColumn()              { return screenColumn; }
-int     box::GetScreenRow()                 { return screenRow; }
-void    box::Reset()                        { value = identity; return; }
-void    box::SetValue(char newValue)        { value = newValue; return; }
-void    box::SetID(char newID)              { identity = newID; return; }
-void    box::SetScreenColumn(int sColumn)   { screenColumn = sColumn;  return; }
-void    box::SetScreenRow(int sRow)         { screenRow = sRow;  return; }
+    char    box::GetID()                        { return identity; }
+    int     box::GetScreenColumn()              { return screenColumn; }
+    int     box::GetScreenRow()                 { return screenRow; }
+    char    box::GetValue()                     { return value; }
+    void    box::Reset()                        { value = identity; return; }
+    void    box::SetID(char newID)              { identity = newID; return; }
+    void    box::SetScreenColumn(int sColumn)   { screenColumn = sColumn;  return; }
+    void    box::SetScreenRow(int sRow)         { screenRow = sRow;  return; }
+    void    box::SetValue(char newValue)        { value = newValue; return; }
 
 // Global variables.
-char const winSets[8][3] = {
-    { '1','2','3' }, // 0 row 1
-    { '4','5','6' }, // 1 row 2
-    { '7','8','9' }, // 2 row 3
-    { '1','4','7' }, // 3 column 1
-    { '2','5','8' }, // 4 column 2
-    { '3','6','9' }, // 5 column 3
-    { '1','5','9' }, // 6 backslash
-    { '7','5','3' }, // 7 foreslash
-};
+    char const winSets[8][3] = {
+        { '1','2','3' }, // 0 row 1
+        { '4','5','6' }, // 1 row 2
+        { '7','8','9' }, // 2 row 3
+        { '1','4','7' }, // 3 column 1
+        { '2','5','8' }, // 4 column 2
+        { '3','6','9' }, // 5 column 3
+        { '1','5','9' }, // 6 backslash
+        { '7','5','3' }, // 7 foreslash
+    };
 
-box gameBoard[3][3];
+    box gameBoard[3][3];
 
-char    activePlayer;
-char    blockingPlay;
-char    winingSet;
-char    winner;
-bool    playerXturn = false;
-int     blockingSet;
+    bool    playerXturn = false;
+    char    activePlayer;
+    char    blockingPlay;
+    char    winner;
+    char    winingSet;
+    int     blockingSet;
 
 // Method prototypes.
 
-bool    CheckForBlock();
-bool    CheckForWin();
-bool    Continue();
-bool    ValidatePlay(char);
-char    GetBlockingPlay(int);
-char    GetPlay();
-char    GetBoxValue(char);
-char    Shuffle(char, char);
-int     Shuffle(int);
-int     Shuffle(int, int);
-void    Home();
-void    Home(bool);
-void    Home(int, int);
-void    InitBoard();
-void    PauseForInput();
-void    PrintEmptyBoard();
-void    PrintValues();
-void    SwitchPlayer();
+    bool    CheckForBlock();
+    bool    CheckForWin();
+    bool    Continue();
+    bool    ValidatePlay(char);
+    char    GetBlockingPlay(int);
+    char    GetBoxValue(char);
+    char    GetPlay();
+    char    Shuffle(char, char);
+    int     Shuffle(int);
+    int     Shuffle(int, int);
+    void    Home();
+    void    Home(bool);
+    void    Home(int, int);
+    void    InitBoard();
+    void    PauseForInput();
+    void    PrintEmptyBoard();
+    void    PrintValues();
+    void    SwitchPlayer();
+
+// Application entry point.
+
+int main()
+{
+    // Play (at least one) game of Tic-Tac-Toe
+    do {
+        Home(16, 0); std::cout << "                                                 ";
+        PrintEmptyBoard();
+        InitBoard();
+        PrintValues();
+        SwitchPlayer();
+        if (activePlayer == 'O') SwitchPlayer(); // For simplicity, start each game with console player as X.
+        blockingPlay = 'U';
+        winner = '-';
+        bool gameInProgress = true;
+        int turnNumber = 1;
+        do {
+            // Player X plays.
+            bool validMove = false;
+            do {
+                Home(10, 0); std::cout << "                                                        ";
+                Home(10, 0); std::cout << "          Make a move, player " << activePlayer << ": ";
+                char thisPlay = GetPlay();
+                validMove = ValidatePlay(thisPlay);
+            } while (!validMove);
+            PrintValues();
+            gameInProgress = (!CheckForWin());
+            if (turnNumber == 9 && gameInProgress) { winner = '-';  gameInProgress = false; }
+            else
+            {
+                if (CheckForBlock()) blockingPlay = GetBlockingPlay(blockingSet);
+            }
+            turnNumber++;
+            SwitchPlayer();
+            // Player O plays.
+            if (gameInProgress)
+            {
+                bool validRandom;
+                if (!ValidatePlay(blockingPlay)) validRandom = false; else validRandom = true;
+                if (!validRandom) do {
+                    char randomPlay = Shuffle('1', '9');
+                    validRandom = ValidatePlay(randomPlay);
+                } while (!validRandom);
+                PrintValues();
+                gameInProgress = (!CheckForWin());
+                turnNumber++;
+                SwitchPlayer();
+            }
+            // Repeat X play then O play as needed.
+        } while (turnNumber < 10 && gameInProgress);
+        if (winner == '-')
+        {
+            Home(16, 0); std::cout << "   This match was a stalemate. ";
+        }
+        // Would you like to play a game? -War Games
+    } while (Continue());
+    // End Of Line -Tron
+    return 0;
+}
 
 // Switch active player from X to O or vice versa.
 void SwitchPlayer()
@@ -379,9 +439,16 @@ bool CheckForWin()
                 else oScore++;
             }
         }
-        if (xScore == 3 || oScore == 3)
+        if (xScore == 3)
         {
             Home(16, 0); std::cout << "   Congratulations, player " << activePlayer << " for the win! (WinPatternID:" << winSetRow << ")";
+            winner = activePlayer;
+            won = true;
+        } 
+        else if (oScore == 3)
+        {
+            Home(16, 0); std::cout << "   Oh dear, player " << activePlayer << " has won! (WinPatternID:" << winSetRow << ")";
+            winner = activePlayer;
             won = true;
         }
     } return won;
@@ -433,58 +500,4 @@ char GetBlockingPlay(int blockingSet)
         char thisBoxValue = GetBoxValue(thisValue);
         if (thisBoxValue == thisValue) block = thisValue;
     } return block;
-}
-
-// Application entry point.
-int main()
-{
-    // Play (at least one) game of Tic-Tac-Toe
-    do {
-        PrintEmptyBoard();
-        InitBoard();
-        PrintValues();
-        SwitchPlayer();
-        if (activePlayer == 'O') SwitchPlayer(); // For simplicity, start each game with console player as X.
-        blockingPlay = 'U';
-        winner = '-';
-        bool gameInProgress = true;
-        int turnNumber = 1;
-        do {
-            // Player X plays.
-            bool validMove = false;
-            do {
-                Home(10, 0); std::cout << "                                                        ";
-                Home(10, 0); std::cout << "          Make a move, player " << activePlayer << ": ";
-                char thisPlay = GetPlay();
-                validMove = ValidatePlay(thisPlay);
-            } while (!validMove);
-            PrintValues();
-            gameInProgress = (!CheckForWin());
-            if (turnNumber == 9 && gameInProgress) { winner = '-';  gameInProgress = false; }
-            else
-            {
-                if (CheckForBlock()) blockingPlay = GetBlockingPlay(blockingSet);
-            }
-            turnNumber++;
-            SwitchPlayer();
-            // Player O plays.
-            if (gameInProgress)
-            {
-                bool validRandom;
-                if (!ValidatePlay(blockingPlay)) validRandom = false; else validRandom = true;
-                if (!validRandom) do {
-                    char randomPlay = Shuffle('1', '9');
-                    validRandom = ValidatePlay(randomPlay);
-                } while (!validRandom);
-                PrintValues();
-                gameInProgress = (!CheckForWin());
-                turnNumber++;
-                SwitchPlayer();
-            }
-            // Repeat X play then O play as needed.
-        } while (turnNumber < 10 && gameInProgress);
-        // Would you like to play a game? -War Games
-    } while (Continue());
-    // End Of Line -Tron
-    return 0;
 }
